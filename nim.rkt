@@ -1,5 +1,5 @@
 (define (nim board players)
-  (if (null? board)(error "The first argument should be a non-empty board")(pb board 0));display the board
+  (if (null? board)(error "The first argument should be a non-empty board"));check board
   (if (not(eq?(length players)2)) (error "There should be exactly 2 players."))
   (play board players 0);"loop" to keep doing turns, starting with player 0.
 )
@@ -10,7 +10,8 @@
     (newline)
     (pb (cdr brd) (+ row 1)))])
 (define (play board players who)
-  (rem board (p-row (list-ref players who)) (p-num(list-ref players who)));remove the one they chose
+  (pb board 0);print the board
+  (play (rem board (p-row (list-ref players who)) (p-num(list-ref players who))) players who);remove the one they chose
 )
 (define (p-row player)(cond
    [(equal? player 'human)(display "Enter a Row:")(read)]
@@ -23,11 +24,13 @@
    [(equal? player 'smart)()]
    ))
 (define (rem lst row count); Removes count elements from the row'th sub-list of the list lst.
-  '(not implemented)
+  (if(eqv? row 0)(cons (rm (car lst) count) (cdr lst))
+   (cons (car lst) (rem (cdr lst) (- row 1) count))
   )
+)
 (define (rm lst count);takes a flat list and removes count X's
-  (if (equal? count 0) lst 
-      (rm (remove lst 'X) (- count 1))
+  (if (eqv? count 0) lst 
+      (rm (remove 'X lst) (- count 1))
   )
 )
 
