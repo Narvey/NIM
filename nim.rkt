@@ -25,5 +25,10 @@
 (define (rem lst row count); Removes count elements from the row'th sub-list of the list lst.
   '(not implemented)
   )
- 
+(define (rm lst count);takes a flat list and removes count X's
+  (if (equal? count 0) lst 
+      (rm (remove lst 'X) (- count 1))
+  )
+)
+
 (nim '((X X) (X) (X X) (X)) '(human human)); FOR TESTING ONLY
