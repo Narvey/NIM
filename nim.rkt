@@ -32,8 +32,10 @@
    [error "bad player type"]
    ))
 (define (rem lst row count); Removes count elements from the row'th sub-list of the list lst.
-  (if(eqv? row 0)(cons (rm (car lst) count) (cdr lst))
-   (cons (car lst) (rem (cdr lst) (- row 1) count))
+  (cond [(eqv? row 0)(cons (rm (car lst) count) (cdr lst))]
+        [(or (< row 0)(> row (length lst)))(display "Bad Row.\n")lst]
+        [(> count (length (list-ref lst row))) (display "Not enough Sticks there.\n")lst]
+        [cons (car lst) (rem (cdr lst) (- row 1) count)]
   )
 )
 (define (rm lst count);takes a flat list and removes count X's
