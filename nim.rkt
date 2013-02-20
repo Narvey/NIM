@@ -19,18 +19,21 @@
   (play (rem board (list(p-row (list-ref players who) board) (p-num (list-ref players who) board))) players (bitwise-xor who 1))
   ;remove the one they chose, then switch players (via the xor).
 )))
-(define (p-row player board)(cond   ; pick row function
-   [(equal? player 'human)(display "Enter a Row: ")(read)]
-   [(equal? player 'random)(random (length board))]
-   [(equal? player 'smart)()]
-   [error "bad player type"]
-   ))
-(define (p-num player board)(cond   ; pick number to remove function
-   [(equal? player 'human)(display "Enter number to remove: ")(read)]
-   [(equal? player 'random)1]
-   [(equal? player 'smart)()]
-   [error "bad player type"]
-   ))
+
+(define (p-row player board)(cond   ; function to pick a row
+  [(equal? player 'human)(display "Enter a Row: ")(read)]
+  [(equal? player 'random)(random (length board))]
+  [(equal? player 'smart)()]
+  [error "bad player type"]
+))
+(define (pick player board); pick number to remove, combine it with picked row.
+  (list (p-row player board) 
+        (cond [(equal? player 'human)(display "Enter number to remove: ")(read)]
+              [(equal? player 'random)1]
+              [(equal? player 'smart)()]
+              [error "bad player type"] )
+))
+
 (define (rem lst move); Removes the move from the list lst.
   (cond [(or (< (car move) 0)(> (car move) (-(length lst)1)))(display "Bad Row.\n")lst]
         [(> (cadr move) (length (list-ref lst (car move)))) (display "Not enough Sticks there.\n")lst]
@@ -53,3 +56,5 @@ Subtract each XOR from each original element
 |#
 
 ;loren.blaney@gmail.com  email source when done.
+(define (out) (random 4))
+(define (in) (list (out) (+ (out)3)))
