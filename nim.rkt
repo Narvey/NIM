@@ -32,10 +32,10 @@
    [error "bad player type"]
    ))
 (define (rem lst move); Removes the move from the list lst.
-  (cond [(or (< (car move) 0)(> (car move) (length lst)))(display "Bad Row.\n")lst]
+  (cond [(or (< (car move) 0)(> (car move) (-(length lst)1)))(display "Bad Row.\n")lst]
         [(> (cadr move) (length (list-ref lst (car move)))) (display "Not enough Sticks there.\n")lst]
-        [(eqv? (car move) 0)(cons (rm (car lst) (cadr move)) (cdr lst))]
-        [cons (car lst) (rem (cdr lst) (list(- (car move) 1) (cadr move)))]
+        [(eqv? (car move) 0) (cons (rm (car lst) (cadr move)) (cdr lst))]
+        [(cons (car lst) (rem (cdr lst) (list(- (car move) 1) (cadr move))))]
   )
 )
 (define (rm lst count);takes a flat list and removes count X's
@@ -53,7 +53,3 @@ Subtract each XOR from each original element
 |#
 
 ;loren.blaney@gmail.com  email source when done.
-
-
-
-(rem board (list 1 1));PROBLEM!!!!!
