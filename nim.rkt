@@ -43,7 +43,7 @@
 )
 ;(map (lambda (x)(bitwise-xor 1 x)) '(7 1 2 3 5))
 
-(nim '((X X X) (X X X X X X) (X X) (X)) '(human human)); FOR TESTING ONLY
+;(nim '((X X X) (X X X X X X) (X X) (X)) '(human human))  ; FOR TESTING
 
 #| XOR them all together with apply
 if the result is not zero, then XOR with each element, to build another list. 
