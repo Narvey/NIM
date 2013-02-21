@@ -11,11 +11,11 @@
     (newline)
     (pb (cdr brd) (+ row 1)))])
 (define (play board players who) ; This function plays a turn (human or otherwise)
+  (printf "----------\n")
   (pb board 0);print the board
-  (if (null? (flatten board)) 
-      (begin (display "Player ")(display (bitwise-xor who 1))(display " Won!")
+  (if (null? (flatten board))(begin (printf "Player ~a Won!" (bitwise-xor who 1))
              (bitwise-xor who 1)) ;if we have empty board, the other player won.
-  (begin (display "Player ")(display who)(display "'s turn.")(newline)     
+  (begin (printf "Player ~a's turn.\n" who)    
   (play (rem board (pick (list-ref players who) board)) players (bitwise-xor who 1))
   ;remove the one they chose, then switch players (via the xor).
 )))
@@ -26,34 +26,45 @@
       (cons (length (car board)) (numify (cdr board)))
   )
 )
-
-
 (define (maxat lst); returns the index of the maximum value in lst.
-  (define (mx l i m) (if (eq? m (car lst)) i;we found it!
-                         (begin (newline)
-                         (mx (cdr l)(+ i 1)m))
+  (define (mx l i m) (if (eq? m (car l)) i;we found it!
+                         (mx (cdr l)(1+ i)m);dig down further looking...
                     ))
-  (mx lst 0 (apply max lst))
+  (mx lst 0 (apply max lst));start looking at index 0.
+)
+(define (list- a b);listwise subtraction. Subtracts each element in b from the corresponding element in b.
+  (if (null? b)a ; they don't need to be the same size
+      (if (null? a)(map - b)
+          (cons (- (car a)(car b))(list- (cdr a)(cdr b)))
+          ))
 )
 
-(maxat (list 3 4 56 3 4 2 6))
 ;;;;;;;;;AUXILARY FUNCTIONS FOR THE pick FUNCTION;;;;;;;;;;
-(define (p-row player board); function to prompt for a row
-  (display "Enter a Row: ")(read)
+(define (prm string); function to prompt for stuff.
+  (printf "Enter ~s: " string)(noalpha(read))
 )
-(define (smart board) ; makes an optimal move given a board.  If there is no optimal move, just does
-  (list (map (apply bitwise-xor board))
+(define (noalpha char);makes sure the read thing is a number
+  (if (number? char) char (prm "a number, PLEASE"))
+)
+(define (rn row board);makes a random move, given a random row and the board.
+  (if (null? (list-ref board row))(rn (random (length board)) board);reject empty row.
+      (list row (1+(random (length(list-ref board row))))) ;make a move in non-empty row.
   )
 )
-(define (smart-row board) ;takes a numify'ed board and determines the ideal row.
-  (map (lambda (x)(bitwise-xor (apply bitwise-xor board) x)) board)
+(define (smart board) ; makes an optimal move given a board.  If there is no optimal move, tries random move in fist row.
+  (if (eqv? 0(apply max (smart-row (numify board))))(rn 0 board)
+  (list (maxat (smart-row (numify board)))(apply max (smart-row (numify board)))))
 )
-(define (pick player board); pick number to remove, combine it with picked row.
-  (cond [(equal? player 'human)(list(p-row board)(begin(display "Enter number to remove: ")(read)))]
+(define (smart-row board) ;takes a numify'ed board and makes a list whose max is the ideal row.
+  (list- board(map (lambda (x)(bitwise-xor (apply bitwise-xor board) x)) board))
+)
+;;;;;;
+(define (pick player board); Make a move based on player type.
+  (cond [(equal? player 'human)(list(prm "a Row")(prm "number to remove: "))]
         ;makes a move from the user-supplied row, then number to remove.
         
-        [(equal? player 'random)(rn (random (length board)))];randomly picks row, then calls rn to pick num.
-        [(equal? player 'smart)()]
+        [(equal? player 'random)(rn (random (length board))board)];randomly picks row, then calls rn to pick num.
+        [(equal? player 'smart)(smart board)];call the AI algorithm.
         [error "bad player type"] 
 ))
 
@@ -64,20 +75,16 @@
 )
 (define (rem lst move); Removes the move from the list lst.
   (cond [(or(< (car move) 0)(> (car move) (-(length lst)1)))
-            (display "Bad Row.\n")(rem lst (pick 'human lst))];try again
+            (display "Bad Row.\n")(rem lst (pick 'human lst))];and try again
         [(> (cadr move) (length (list-ref lst (car move))))
-            (display "Not enough Sticks there.\n")(rem lst (pick 'human lst))];try again
-        [(eqv? (car move) 0) (cons (rm (car lst) (cadr move)) (cdr lst))]
+            (display "Not enough Sticks there.\n")(rem lst (pick 'human lst))];and try again
+        [(< (cadr move) 1)(display "Must remove at least 1 stick.\n")(rem lst (pick 'human lst))];and try again
+        [(eqv? (car move) 0) (cons (rm (car lst) (cadr move)) (cdr lst))];base case
         [(cons (car lst) (rem (cdr lst) (list(- (car move) 1) (cadr move))))]
   )
 )
 
 
-(define board '((X X X) (X X X X X X) (X X) (X)))
-
-#| XOR them all together with apply
-if the result is not zero, then XOR with each element, to build another list. 
-Subtract each XOR from each original element 
-|#
+(define board '((X X X X X X) (X X X X X) (X) (X X)(X X X)));start board
 
 ;loren.blaney@gmail.com  email source when done.
