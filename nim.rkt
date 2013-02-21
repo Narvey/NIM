@@ -85,6 +85,6 @@
 )
 
 
-(define board '((X X X X X X) (X X X X X) (X) (X X)(X X X)));start board
+(define d-board '((X X X X X X) (X X X X X) (X) (X X)(X X X)));default board
 
 ;loren.blaney@gmail.com  email source when done.
